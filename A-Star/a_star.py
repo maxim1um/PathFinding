@@ -7,8 +7,8 @@ import numpy as np
 
 from matplotlib.patches import Rectangle
 
-import point
-import random_map
+from point import Point
+from map import RandomMap
 
 class AStar:
     def __init__(self, map):
@@ -31,12 +31,8 @@ class AStar:
     def TotalCost(self, p):
         return self.BaseCost(p) + self.HeuristicCost(p)
 
-    def IsValidPoint(self, x, y):
-        if x < 0 or y < 0:
-            return False
-        if x >= self.map.size or y >= self.map.size:
-            return False
-        return not self.map.IsObstacle(x, y)
+    def IsValidPoint(self, p):
+        return not self.map.IsObstacle(p)
 
     def IsInPointList(self, p, point_list):
         for point in point_list:
@@ -51,27 +47,27 @@ class AStar:
         return self.IsInPointList(p, self.close_set)
 
     def IsStartPoint(self, p):
-        return p.x == 0 and p.y ==0
+        return p.x == 1 and p.y == 1
 
     def IsEndPoint(self, p):
         return p.x == self.map.size-1 and p.y == self.map.size-1
 
-    def SaveImage(self, plt):
-        millis = int(round(time.time() * 1000))
-        filename = './' + str(millis) + '.png'
-        plt.savefig(filename)
+    # def SaveImage(self, plt):
+    #     millis = int(round(time.time() * 1000))
+    #     filename = './' + str(millis) + '.png'
+    #     plt.savefig(filename)
 
     def ProcessPoint(self, x, y, parent):
-        if not self.IsValidPoint(x, y):
+        point = Point(x, y)
+        if not self.IsValidPoint(point):
             return # Do nothing for invalid point
-        p = point.Point(x, y)
-        if self.IsInCloseList(p):
+        if self.IsInCloseList(point):
             return # Do nothing for visited point
-        print('Process Point [', p.x, ',', p.y, ']', ', cost: ', p.cost)
-        if not self.IsInOpenList(p):
-            p.parent = parent
-            p.cost = self.TotalCost(p)
-            self.open_set.append(p)
+        print('Process Point [', point.x, ',', point.y, ']', ', cost: ', point.cost)
+        if not self.IsInOpenList(point):
+            point.parent = parent
+            point.cost = self.TotalCost(point)
+            self.open_set.append(point)
 
     def SelectPointInOpenList(self):
         index = 0
@@ -101,40 +97,47 @@ class AStar:
         end_time = time.time()
         print('===== Algorithm finish in', int(end_time-start_time), ' seconds')
 
-    def RunAndSaveImage(self, ax, plt):
+    def Init(self):
         start_time = time.time()
 
-        start_point = point.Point(0, 0)
+        start_point = Point(1, 1)
         start_point.cost = 0
         self.open_set.append(start_point)
 
-        while True:
-            index = self.SelectPointInOpenList()
-            if index < 0:
-                print('No path found, algorithm failed!!!')
-                return
-            p = self.open_set[index]
-            rec = Rectangle((p.x, p.y), 1, 1, color='c')
-            ax.add_patch(rec)
-            self.SaveImage(plt)
+    def RunAndSaveImage(self):
+        # start_time = time.time()
 
-            if self.IsEndPoint(p):
-                return self.BuildPath(p, ax, plt, start_time)
+        # start_point = Point(1, 1)
+        # start_point.cost = 0
+        # self.open_set.append(start_point)
 
-            del self.open_set[index]
-            self.close_set.append(p)
-
-            # Process all neighbors
-            x = p.x
-            y = p.y
-            self.ProcessPoint(x-1, y+1, p)
-            self.ProcessPoint(x-1, y, p)
-            self.ProcessPoint(x-1, y-1, p)
-            self.ProcessPoint(x, y-1, p)
-            self.ProcessPoint(x+1, y-1, p)
-            self.ProcessPoint(x+1, y, p)
-            self.ProcessPoint(x+1, y+1, p)
-            self.ProcessPoint(x, y+1, p)
+        index = self.SelectPointInOpenList()
+        if index < 0:
+            print('No path found, algorithm failed!!!')
+            return
+        p = self.open_set[index]
+        # rec = Rectangle((p.x, p.y), 1, 1, color='c')
+        # ax.add_patch(rec)
+        # self.SaveImage(plt)
+        for point in self.map.grid:
+            if p.x == point.x and p.y == point.y:
+                point.value = 1
+        if self.IsEndPoint(p):
+            # return self.BuildPath(p, ax, plt, start_time)
+            return
+        del self.open_set[index]
+        self.close_set.append(p)
+        # Process all neighbors
+        x = p.x
+        y = p.y
+        self.ProcessPoint(x-1, y+1, p)
+        self.ProcessPoint(x-1, y, p)
+        self.ProcessPoint(x-1, y-1, p)
+        self.ProcessPoint(x, y-1, p)
+        self.ProcessPoint(x+1, y-1, p)
+        self.ProcessPoint(x+1, y, p)
+        self.ProcessPoint(x+1, y+1, p)
+        self.ProcessPoint(x, y+1, p)
 
 
 

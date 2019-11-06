@@ -13,7 +13,6 @@ class RandomMap:
             return False
         
         return True
-        
 
     def InitMap(self):
         # Init the whole map with defualt value
@@ -53,4 +52,16 @@ class RandomMap:
                     grid.value = -1
 
         return True
-         
+    
+    def IsObstacle(self, p):
+        count = 0
+        for point in self.grid:
+            if p.x == point.x and p.y == point.y:
+                if point.value == 0:
+                    return False
+                else:
+                    return True
+            count += 1
+        
+        if count == self.size * self.size:
+            return False
