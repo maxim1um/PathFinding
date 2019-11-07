@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from a_star import AStar
-from map import RandomMap
+from random_map import RandomMap
 
 fig,ax = plt.subplots()
 ax.cla()
@@ -12,7 +12,7 @@ ax.cla()
 map = RandomMap()
 mapData = np.zeros((map.size, map.size,3), int)
 
-map.SetupMap()
+map.Setup()
 
 for grid in map.grid:
     i = grid.x

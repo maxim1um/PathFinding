@@ -4,26 +4,21 @@ from point import Point
 class RandomMap:
     def __init__(self, size=50):
         self.size = size
-        self.grid = []
-
-    def SetupMap(self):
-        self.InitMap()
+        self.grid = np.zeros((size, size), dtype=np.int)
+#
+# TODO: Refactory code
+#  
+#       Need to remove point property and store the info by using 2d array 
+#       with a int value
+#
+    def Setup(self):
+        # Crate the boundry
+        self.CreateBoundry()
         bResult = self.CreateCentralObstacles()
         if bResult == False:
             return False
         
         return True
-
-    def InitMap(self):
-        # Init the whole map with defualt value
-        self.CreateMapGrid()
-        # Crate the boundry
-        self.CreateBoundry()
-    
-    def CreateMapGrid(self):
-        for i in range(self.size):
-            for j in range(self.size):
-                self.grid.append(Point(i, j))
 
     def CreateBoundry(self):
         for point in self.grid:
