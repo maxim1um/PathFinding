@@ -8,7 +8,7 @@ import numpy as np
 from matplotlib.patches import Rectangle
 
 from point import Point
-from map import RandomMap
+from random_map import RandomMap
 
 class AStar:
     def __init__(self, map):
